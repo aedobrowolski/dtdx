@@ -42,37 +42,11 @@ import (
 /* ----------------------------------------------------------------------------------- */
 /* Parser API */
 
-// TokenType defines the categories of token.
-//
-// Token types are categories of token that should be treated similarly by the
-// parser.  For example, the 'operator' type may include the values '+', '-',
-// '*' and '/' in a calculator grammar.  Some tokens types are open ended. For
-// example the number token type may include values that match any signed or
-// unsigned, integer or float, base 8, 10, or 16, with or without exponent.
-// The lexer should scan the value, letting the parser do the validation.
-type TokenType int
-
 // ErrorTok is used to send back errors to the parser.
 const ErrorTok = TokenType(-1)
 
-// Token represents a lexeme detected by the lexer.  It has a type and a value.
-// The value is always a slice of the input string.
-type Token struct {
-	Type  TokenType
-	Value string
-}
-
-// TokenTypeStringer is used to print token types if not nil.
-var TokenTypeStringer func(TokenType) string
-
-func (t Token) String() string {
-	var typ string
-	if TokenTypeStringer == nil {
-		typ = fmt.Sprintf("%v", t.Type)
-	} else {
-		typ = TokenTypeStringer(t.Type)
-	}
-	return fmt.Sprintf("{%s, \"%s\"}", typ, t.Value)
+func init() {
+	TokenName[ErrorTok] = "ErrorTok"
 }
 
 const (
@@ -80,13 +54,14 @@ const (
 	EOFRune rune = 0
 )
 
-// Lex encapsulates the lexer state.
+// Lex encapsulates the lexer state.  State is for client use.
 type Lex struct {
 	source          string
 	startState      StateFunc
 	start, position int
 	atEOF           bool
 	tokens          chan Token
+	State           interface{}
 }
 
 // New returns a lexer ready to parse the given string.

@@ -8,8 +8,8 @@ import (
 )
 
 func ExampleTokenTypeString() {
-	for key := range tokMap {
-		fmt.Println("Key:", key, "Value:", tokenTypeString(key))
+	for key := range lexer.TokenName {
+		fmt.Printf("Key: %d Value: %s\n", key, key)
 	}
 	// Unordered output:
 	// Key: -1 Value: ErrorTok

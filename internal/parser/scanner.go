@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"strconv"
 	"unicode"
 
 	"github.com/adobrowolski/dtdx/internal/lexer"
@@ -29,31 +28,19 @@ const (
 	eofTok          // signals end of input
 )
 
-var tokMap = map[lexer.TokenType]string{
-	indentTok:       "indentTok",
-	equalsTok:       "equalsTok",
-	openTok:         "openTok",
-	closeTok:        "closeTok",
-	separatorTok:    "separatorTok",
-	multiplicityTok: "multiplicityTok",
-	identTok:        "identTok",
-	quoteTok:        "quoteTok",
-	referenceTok:    "referenceTok",
-	directiveTok:    "directiveTok",
-	commentTok:      "commentTok",
-	eofTok:          "eofTok",
-	lexer.ErrorTok:  "ErrorTok",
-}
-
-func tokenTypeString(tt lexer.TokenType) string {
-	if tokString, ok := tokMap[tt]; ok {
-		return tokString
-	}
-	return "tok_" + strconv.Itoa(int(tt))
-}
-
 func init() {
-	lexer.TokenTypeStringer = tokenTypeString
+	lexer.TokenName[indentTok] = "indentTok"
+	lexer.TokenName[equalsTok] = "equalsTok"
+	lexer.TokenName[openTok] = "openTok"
+	lexer.TokenName[closeTok] = "closeTok"
+	lexer.TokenName[separatorTok] = "separatorTok"
+	lexer.TokenName[multiplicityTok] = "multiplicityTok"
+	lexer.TokenName[identTok] = "identTok"
+	lexer.TokenName[quoteTok] = "quoteTok"
+	lexer.TokenName[referenceTok] = "referenceTok"
+	lexer.TokenName[directiveTok] = "directiveTok"
+	lexer.TokenName[commentTok] = "commentTok"
+	lexer.TokenName[eofTok] = "eofTok"
 }
 
 /* -----------------------------------------------------------------------------
