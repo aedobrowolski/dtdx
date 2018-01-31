@@ -1,0 +1,102 @@
+ArScreenPlay type= template= xml:lang= icon=#URI =>
+    Description identifier= version=
+        Title
+        Subject?
+        Author?
+        Date
+        Restrictions?
+            Copyright?
+            Rights?
+
+    # This should be captured at the time the document is created and added to the 
+    # Object that contains this document as metadata.  It is needed a the time of
+    # authoring.
+    Applic
+        Product number= *
+            Name?
+            Model number= *
+                Manufactured startDate= endDate= locations= *
+                SerialNumber startSN= endSN= *
+                Options optionSet= apex= *
+
+    Runtime
+        Streams
+            ThingDef id= uri=
+                Label?
+                Documentation?
+                Event inputs= outputs=
+    SupplyDefs ?
+        SupportEquipDef  id= parturi= *
+            Text... +
+        MaterialDef id= parturi= *
+            Text... +
+        ConsumableDef  id= parturi= *
+            Text... +
+        SparePartDef  id= parturi= *
+            Text... +
+
+    Scenes startScene=#IDREF 
+        NoticeDefs
+            Notice...
+        Scene id= icon=#URI type=(intro|Procedure)
+            Title
+                Text... +
+            Applic... ?
+            Sensors ?
+                Sensor idref= +
+
+
+CondProcedure
+    Applic... ? 
+    Predicate id= name= default= ?
+        UserQuestion type=(bool|int|float|uri|enum|string) ?
+            Text... +
+            Value... ? 
+        SensorValue ?
+            SensorRef
+            Condition
+    (Procedure... | ProcedureRef...)
+
+ProcedureRef idref=
+    Applic... ? 
+
+Procedure id= type=
+    Title...
+    Applic... ? 
+    PreRequisites ?
+        (Procedure... | ProcedureRef... | CondProcedure...) +
+    PostRequisites ?
+        (Procedure... | ProcedureRef... | CondProcedure...) +
+    Supplies ?
+        SupportEquipRef id= +
+            Applic... ?
+        MaterialRef id= *
+            Applic... ?
+        ConsumableRef id= *
+            Applic... ?
+        SparePartRef id= *
+            Applic... ?
+    Notices idrefs= ?
+        Notice... *
+    Steps id=
+        (Step... | Choice... | Loop... | Steps | ProcedureRef...) +
+
+Notice id= type=(warning|caution|note) ack=(true|false) +
+    Text type=(full|spoken|caption) xpath= + # add TextRef for reuse?
+    Applic... ?
+    
+Step id= mediaLink= suspendable=(true|false)
+    Title...
+    Applic... ?
+    Supplies idrefs= ?
+    Notices... ? 
+    Reference href= *
+        Title...
+
+Choice
+    (Condition..., Steps...)+
+    Steps ? # Otherwise steps
+
+Loop
+    Condition..., Steps...
+

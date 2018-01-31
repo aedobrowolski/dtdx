@@ -1,0 +1,16 @@
+# The following definition was removed from runtime
+
+        # Actors that are available in the runtime
+        ActorDefs
+            Actor id= type=(user|actor|director|widget) required=(true|false) +
+                Label ? 
+                Documentation ? 
+                Config ? 
+                    Param name= type=(bool|int|float|uri|enum|string) +
+                        Value id= default= 
+                Event inputs= outputs=
+            ActorGroup id= +
+                Label?
+                Documentation ? 
+                Actor group=#IDREF +
+                    Config ?

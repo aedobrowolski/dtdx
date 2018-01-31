@@ -1,0 +1,47 @@
+# The purpose of a MediaLink is to link various media with screenplay actions in a 
+# decoupled manner, allowing them to be created independently.
+# 
+# Some steps have an associated media action GUID, created when they are authored.
+# Each GUID is mapped to one or more (parameterized) media actions by media specialists.
+# An action may be anything supported by a particular media type on the target device.
+# 
+# For an overloaded screenplay, there may be multiple media of the same type in an action. 
+# The applicability embedded inside the media is used to choose the appropriate one. 
+
+MediaLink
+    Contexts...
+    Actions...
+
+# A context is a pointer back to the original context (e.g. proceedure) in which the 
+# action has been authored.
+# 
+# The context is important for the media author to understand the requirements.
+# 
+Contexts
+    Context id= uri= *
+        Label ?
+
+# An Action is an event (identified by GUID) that triggers a media action. 
+# It is expected that the technical writer creates the Action.  However, the
+# technical illustrator or sound department creates the children.  The Applic
+# is added to restrict specific children to specific instances of products.
+#
+# When more than one media of a given type is found, the one with the highest priority
+# is returned.  However if there is a tie for priority, then all are returned. 
+# 
+Actions
+    Action id= guid= context=#IDREF fallback=#IDREF *
+        Media mime= uri= priority=#NMTOKEN start= stop= *
+            Applic... ? 
+            Param name= value= *
+
+# Applic is use to restrict the applicability of any given action
+# See definition in screenplay schema.
+# 
+Applic
+    Product number= *
+        Name ?
+        Model number= *
+            Manufactured startDate= endDate= locations= *
+            SerialNumber startSN= endSN= *
+            Options optionSet= apex= *
