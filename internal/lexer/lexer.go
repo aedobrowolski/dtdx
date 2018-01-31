@@ -80,13 +80,13 @@ const (
 	EOFRune rune = 0
 )
 
-// Lex is the lexer state.
+// Lex encapsulates the lexer state.
 type Lex struct {
 	source          string
-	start, position int
 	startState      StateFunc
+	start, position int
+	atEOF           bool
 	tokens          chan Token
-	rewind          []rune
 }
 
 // New returns a lexer ready to parse the given string.
@@ -162,11 +162,9 @@ func (l *Lex) Errorf(format string, args ...interface{}) StateFunc {
 	return nil
 }
 
-// Ignore clears the rewind stack and then sets the current beginning position
-// to the current position in the source which effectively ignores the section
-// of the source being analyzed.
+// Ignore skips over the current string to ignore the section of the source
+// being analyzed.
 func (l *Lex) Ignore() {
-	l.rewind = []rune{}
 	l.start = l.position
 }
 
@@ -188,13 +186,15 @@ func (l *Lex) Next() rune {
 	)
 	str := l.source[l.position:]
 	if len(str) == 0 {
+		if l.atEOF {
+			panic("Next attempted to move past end of source.")
+		}
+		l.atEOF = true
 		r, s = EOFRune, 0
 	} else {
 		r, s = utf8.DecodeRuneInString(str)
 	}
 	l.position += s
-	l.rewind = append(l.rewind, r)
-
 	return r
 }
 
@@ -202,15 +202,12 @@ func (l *Lex) Next() rune {
 // occur more than once per call to Next but you can never backup past the
 // last point a token was emitted.
 func (l *Lex) Backup() {
-	i := len(l.rewind) - 1
-	r := l.rewind[i]
-	l.rewind = l.rewind[:i]
-	if r > EOFRune {
-		size := utf8.RuneLen(r)
-		l.position -= size
-		if l.position < l.start {
-			l.position = l.start
-		}
+	str := l.source[l.start:l.position]
+	if l.atEOF {
+		l.atEOF = false
+	} else if len(str) > 0 {
+		_, s := utf8.DecodeLastRuneInString(str)
+		l.position -= s
 	}
 }
 
