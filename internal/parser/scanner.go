@@ -12,9 +12,10 @@ import (
 
 // Lexical types used in the grammar
 const (
-	illegalTok lexer.TokenType = iota
+	_ lexer.TokenType = iota
 
-	indentTok       // whitespace at start of line
+	indentTok       // increased whitespace at start of line
+	dedentTok       // decreased whitespace at start of line
 	equalsTok       // =
 	openTok         // (
 	closeTok        // )
@@ -30,6 +31,7 @@ const (
 
 func init() {
 	lexer.TokenName[indentTok] = "indentTok"
+	lexer.TokenName[dedentTok] = "dedentTok"
 	lexer.TokenName[equalsTok] = "equalsTok"
 	lexer.TokenName[openTok] = "openTok"
 	lexer.TokenName[closeTok] = "closeTok"
@@ -45,11 +47,12 @@ func init() {
 
 /* -----------------------------------------------------------------------------
 
-The initial state is NewLineState. Like python indents matter. Whitespace is
-scanned up until the first non-blank token. An 'indent' token will be emitted.
-Then the state will change to OuterState.
+NewLineState is the initial state. Like python indents matter. Whitespace is
+scanned up until the first non-blank token. An 'indent' or 'dedent' token will
+be emitted if the indent increases or decreases respectively. Then the state
+will change to OuterState.
 
-In the OuterState whitespace is ignored. The state goes to
+In OuterState whitespace is ignored. The state transitions to
 - NewLineState 		after a newline
 - CommentState		after a comment start not followed by a letter
 - SingleQuoteState 	after a single quote
@@ -100,6 +103,7 @@ func OuterState(l *lexer.Lex) lexer.StateFunc {
 			}
 			return CommentState
 		case lexer.EOFRune:
+			updateIndent(l) // emit final dedentTok(s)
 			l.Emit(eofTok)
 			return nil
 		default:
@@ -119,9 +123,50 @@ func NewlineState(l *lexer.Lex) lexer.StateFunc {
 		l.Next() // move past the newline and try again
 		return NewlineState
 	}
-	l.Emit(indentTok)
 
+	return updateIndent(l)
+}
+
+func updateIndent(l *lexer.Lex) lexer.StateFunc {
+	type intStack []int
+	// do lazy initialization of the lexer state if needed
+	if _, ok := l.State.(intStack); !ok {
+		l.State = intStack{0} // zero value is never popped
+	}
+
+	indents := l.State.(intStack)
+	switch size, peek := measure(l.Current()), indents[len(indents)-1]; {
+	case size == peek:
+		l.Ignore()
+	case size > peek:
+		l.Emit(indentTok)
+		l.State = append(indents, size) // push
+	case size < peek:
+		for size < peek {
+			l.Emit(dedentTok)
+			peek, indents = indents[len(indents)-2], indents[:len(indents)-1] // pop
+		}
+		l.State = indents
+		if peek < size {
+			return l.Errorf("Inconsistent dedent. Expecting %d but found %d.", peek, size)
+		}
+	}
 	return OuterState
+}
+
+func measure(s string) int {
+	width := 0
+	for _, r := range s {
+		switch r {
+		case ' ':
+			width++
+		case '\t':
+			width += 4 - (width % 4)
+		default:
+			panic("Bad rune found in indent")
+		}
+	}
+	return width // must be >= 0
 }
 
 // DoubleQuoteState handles values of the form "..."

@@ -9,22 +9,23 @@ import (
 
 func ExampleTokenTypeString() {
 	for key := range lexer.TokenName {
-		fmt.Printf("Key: %d Value: %s\n", key, key)
+		fmt.Printf("Key: %2d Value: %s\n", key, key)
 	}
 	// Unordered output:
 	// Key: -1 Value: ErrorTok
-	// Key: 1 Value: indentTok
-	// Key: 2 Value: equalsTok
-	// Key: 3 Value: openTok
-	// Key: 4 Value: closeTok
-	// Key: 5 Value: separatorTok
-	// Key: 6 Value: multiplicityTok
-	// Key: 7 Value: identTok
-	// Key: 8 Value: quoteTok
-	// Key: 9 Value: referenceTok
-	// Key: 10 Value: directiveTok
-	// Key: 11 Value: commentTok
-	// Key: 12 Value: eofTok
+	// Key:  1 Value: indentTok
+	// Key:  2 Value: dedentTok
+	// Key:  3 Value: equalsTok
+	// Key:  4 Value: openTok
+	// Key:  5 Value: closeTok
+	// Key:  6 Value: separatorTok
+	// Key:  7 Value: multiplicityTok
+	// Key:  8 Value: identTok
+	// Key:  9 Value: quoteTok
+	// Key: 10 Value: referenceTok
+	// Key: 11 Value: directiveTok
+	// Key: 12 Value: commentTok
+	// Key: 13 Value: eofTok
 }
 
 const test1 = `# The first top level definition.
@@ -35,7 +36,8 @@ paragraph
 
 # A second top level definition.
 line
-	(PCDATA, bold)*`
+	(PCDATA, bold)*
+		# test double dedent`
 
 func ExampleTest1() {
 	l := lexer.New(test1, NewlineState).Start()
@@ -43,22 +45,17 @@ func ExampleTest1() {
 		fmt.Printf("%s\n", tok)
 	}
 	// Output:
-	// {indentTok, ""}
 	// {commentTok, "# The first top level definition."}
-	// {indentTok, ""}
 	// {identTok, "paragraph"}
 	// {indentTok, "    "}
 	// {commentTok, "# A definition with two references nested inside paragraph."}
-	// {indentTok, "    "}
 	// {identTok, "title"}
 	// {multiplicityTok, "?"}
-	// {indentTok, "    "}
 	// {identTok, "line"}
 	// {referenceTok, "..."}
 	// {multiplicityTok, "+"}
-	// {indentTok, ""}
+	// {dedentTok, ""}
 	// {commentTok, "# A second top level definition."}
-	// {indentTok, ""}
 	// {identTok, "line"}
 	// {indentTok, "	"}
 	// {openTok, "("}
@@ -67,6 +64,10 @@ func ExampleTest1() {
 	// {identTok, "bold"}
 	// {closeTok, ")"}
 	// {multiplicityTok, "*"}
+	// {indentTok, "		"}
+	// {commentTok, "# test double dedent"}
+	// {dedentTok, ""}
+	// {dedentTok, ""}
 	// {eofTok, ""}
 }
 
