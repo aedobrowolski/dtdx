@@ -20,7 +20,7 @@ func ExampleTokenTypeString() {
 	// Key:  5 Value: closeTok
 	// Key:  6 Value: separatorTok
 	// Key:  7 Value: multiplicityTok
-	// Key:  8 Value: identTok
+	// Key:  8 Value: identifierTok
 	// Key:  9 Value: quoteTok
 	// Key: 10 Value: referenceTok
 	// Key: 11 Value: directiveTok
@@ -46,22 +46,22 @@ func ExampleTest1() {
 	}
 	// Output:
 	// {commentTok, "# The first top level definition."}
-	// {identTok, "paragraph"}
+	// {identifierTok, "paragraph"}
 	// {indentTok, "    "}
 	// {commentTok, "# A definition with two references nested inside paragraph."}
-	// {identTok, "title"}
+	// {identifierTok, "title"}
 	// {multiplicityTok, "?"}
-	// {identTok, "line"}
+	// {identifierTok, "line"}
 	// {referenceTok, "..."}
 	// {multiplicityTok, "+"}
 	// {dedentTok, ""}
 	// {commentTok, "# A second top level definition."}
-	// {identTok, "line"}
+	// {identifierTok, "line"}
 	// {indentTok, "	"}
 	// {openTok, "("}
-	// {identTok, "PCDATA"}
+	// {identifierTok, "PCDATA"}
 	// {separatorTok, ","}
-	// {identTok, "bold"}
+	// {identifierTok, "bold"}
 	// {closeTok, ")"}
 	// {multiplicityTok, "*"}
 	// {indentTok, "		"}
@@ -84,20 +84,20 @@ func ExampleTest2() {
 	// {indentTok, ""}
 	// {commentTok, "# Define paragraph element with three attributes"}
 	// {indentTok, ""}
-	// {identTok, "paragraph"}
-	// {identTok, "id"}
+	// {identifierTok, "paragraph"}
+	// {identifierTok, "id"}
 	// {equalsTok, "="}
 	// {directiveTok, "#ID"}
-	// {identTok, "name"}
+	// {identifierTok, "name"}
 	// {equalsTok, "="}
-	// {identTok, "justify"}
+	// {identifierTok, "justify"}
 	// {equalsTok, "="}
 	// {openTok, "("}
-	// {identTok, "left"}
+	// {identifierTok, "left"}
 	// {separatorTok, "|"}
-	// {identTok, "right"}
+	// {identifierTok, "right"}
 	// {separatorTok, "|"}
-	// {identTok, "center"}
+	// {identifierTok, "center"}
 	// {closeTok, ")"}
 	// {eofTok, ""}
 }
@@ -108,13 +108,13 @@ func ExampleAttrScanner() {
 		fmt.Println(tok)
 	}
 	// Output:
-	// {identTok, "attr1"}
+	// {identifierTok, "attr1"}
 	// {equalsTok, "="}
 	// {quoteTok, "one"}
-	// {identTok, "attr2"}
+	// {identifierTok, "attr2"}
 	// {equalsTok, "="}
 	// {quoteTok, "2"}
-	// {identTok, "attr3"}
+	// {identifierTok, "attr3"}
 	// {equalsTok, "="}
 	// {eofTok, ""}
 }
@@ -132,13 +132,13 @@ func TestReference(t *testing.T) {
 func TestNextToken3(t *testing.T) {
 	l := lexer.New("attr1=\"one\" attr2='2' attr3=", OuterState).Start()
 	testCases := []lexer.Token{
-		{identTok, "attr1"},
+		{identifierTok, "attr1"},
 		{equalsTok, "="},
 		{quoteTok, "one"},
-		{identTok, "attr2"},
+		{identifierTok, "attr2"},
 		{equalsTok, "="},
 		{quoteTok, "2"},
-		{identTok, "attr3"},
+		{identifierTok, "attr3"},
 		{equalsTok, "="},
 		{eofTok, ""},
 	}
@@ -154,7 +154,7 @@ func TestNextToken3(t *testing.T) {
 func TestRunawayQuote(t *testing.T) {
 	l := lexer.New("attr1=\"one attr2='2' attr3=", OuterState).Start()
 	testCases := []lexer.Token{
-		{identTok, "attr1"},
+		{identifierTok, "attr1"},
 		{equalsTok, "="},
 		{lexer.ErrorTok, "Runaway quote: one attr2='2' attr3="},
 	}

@@ -21,7 +21,7 @@ const (
 	closeTok        // )
 	separatorTok    // , or | or &
 	multiplicityTok // * or + or ?
-	identTok        // value
+	identifierTok   // value
 	quoteTok        // 'value' or "value"
 	referenceTok    // ...
 	directiveTok    // #VALUE
@@ -37,7 +37,7 @@ func init() {
 	lexer.TokenName[closeTok] = "closeTok"
 	lexer.TokenName[separatorTok] = "separatorTok"
 	lexer.TokenName[multiplicityTok] = "multiplicityTok"
-	lexer.TokenName[identTok] = "identTok"
+	lexer.TokenName[identifierTok] = "identifierTok"
 	lexer.TokenName[quoteTok] = "quoteTok"
 	lexer.TokenName[referenceTok] = "referenceTok"
 	lexer.TokenName[directiveTok] = "directiveTok"
@@ -216,7 +216,7 @@ func IdentifierState(l *lexer.Lex) lexer.StateFunc {
 			break
 		}
 	}
-	l.Emit(identTok)
+	l.Emit(identifierTok)
 	return OuterState
 }
 

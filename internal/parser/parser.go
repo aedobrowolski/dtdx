@@ -118,7 +118,7 @@ func (p *Parser) Parse() (*Element, error) {
 	elem := Element{}
 
 	// First token should be a "SELECT" keyword.
-	if tok, lit := p.scan(); tok != identTok {
+	if tok, lit := p.scan(); tok != identifierTok {
 		return nil, fmt.Errorf("found %q, expected element identifier", lit)
 	}
 

@@ -22,4 +22,4 @@ _testmain.go
 
 *.exe
 debug
-debug.test
+**/debug.test

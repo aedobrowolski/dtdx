@@ -9,7 +9,7 @@ import (
 const (
 	NumberToken lexer.TokenType = iota
 	OpToken
-	IdentToken
+	identifierToken
 )
 
 func NumberState(l *lexer.Lex) lexer.StateFunc {
@@ -30,7 +30,7 @@ func IdentState(l *lexer.Lex) lexer.StateFunc {
 		r = l.Next()
 	}
 	l.Backup()
-	l.Emit(IdentToken)
+	l.Emit(identifierToken)
 
 	return WhitespaceState
 }
@@ -125,10 +125,10 @@ func Test_MultipleTokens(t *testing.T) {
 	}{
 		{NumberToken, "123"},
 		{OpToken, "."},
-		{IdentToken, "hello"},
+		{identifierToken, "hello"},
 		{NumberToken, "675"},
 		{OpToken, "."},
-		{IdentToken, "world"},
+		{identifierToken, "world"},
 	}
 
 	l := lexer.New("123.hello  675.world", NumberState)
