@@ -81,9 +81,7 @@ func ExampleTest2() {
 		fmt.Println(tok)
 	}
 	// Output:
-	// {indentTok, ""}
 	// {commentTok, "# Define paragraph element with three attributes"}
-	// {indentTok, ""}
 	// {identifierTok, "paragraph"}
 	// {identifierTok, "id"}
 	// {equalsTok, "="}
