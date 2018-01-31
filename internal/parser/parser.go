@@ -83,8 +83,8 @@ elementChild    := comment | element modifier?
 modifier        := '*' | '+' | '?'
 contentStart    := greaterIndent | '=>'
 elementSep      := sameIndent | ','
-greaterIndent   := '\n' WS             [WS.lit.len>parent.indent]
-sameIndent      := '\n' WS             [WS.lit.len==parent.indent]
+greaterIndent   := '\n' indentTok             [len(tok.value)>parent.indent]
+sameIndent      := '\n' indentTok             [len(tok.value)==parent.indent]
 
 ------------------------------------------------------------------ */
 
